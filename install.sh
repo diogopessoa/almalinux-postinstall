@@ -324,11 +324,9 @@ if sudo flatpak config --system --set languages "pt" \
         https://dl.flathub.org/repo/flathub.flatpakrepo; then
 
     lista_apps=(
-        com.brave.Browser
         com.mattjakeman.ExtensionManager
         io.github.kolunmi.Bazaar
         io.github.thetumultuousunicornofdarkness.cpu-x
-        net.nokyan.Resources
         org.gnome.SimpleScan
         org.localsend.localsend_app
         page.codeberg.libre_menu_editor.LibreMenuEditor
