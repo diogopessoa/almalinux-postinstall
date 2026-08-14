@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-# Descrição: Script pessoal de configuração do AlmaLinux 10 Atomic
+# Description: Personal AlmaLinux 10 Atomic configuration script
 # Author: Diogo Pessoa
-# Versão: 1.0
+# Version: 1.0
 # GitHub: https://github.com/diogopessoa/almalinux-postinstall/
 
 set -Eeuo pipefail
@@ -10,22 +10,22 @@ export SYSTEMD_PAGER=""
 export NONINTERACTIVE=1
 
 # ============================================================
-# FUNÇÕES DE LOG E CORES
+# LOGGING AND COLOR FUNCTIONS
 # ============================================================
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-YELLOW='\033[1;33m'
-BOLD='\033[1m'
-NC='\033[0m'
+RED='\u001B[0;31m'
+GREEN='\u001B[0;32m'
+BLUE='\u001B[0;34m'
+YELLOW='\u001B[1;33m'
+BOLD='\u001B[1m'
+NC='\u001B[0m'
 
 info()    { echo -e "${BLUE}[INFO]${NC} $1"; }
 success() { echo -e "${GREEN}[OK]${NC} $1"; }
-warning() { echo -e "${YELLOW}[AVISO]${NC} $1"; }
+warning() { echo -e "${YELLOW}[WARNING]${NC} $1"; }
 
-# ---------------- Verificação de Usuário ----------------
+# ---------------- User Check ----------------
 if [[ $EUID -eq 0 ]]; then
-    echo "Não execute este script como root: ./install.sh"
+    echo "Do not run this script as root: ./install.sh"
     exit 1
 fi
 
@@ -44,7 +44,7 @@ SUDO_KEEPALIVE_PID=$!
 trap 'kill "$SUDO_KEEPALIVE_PID" 2>/dev/null || true' EXIT
 
 # ============================================================
-# VARIÁVEIS DE STATUS
+# STATUS VARIABLES
 # ============================================================
 status_brew="${RED} ✗${NC}"
 status_brew_update="${RED} ✗${NC}"
@@ -61,7 +61,8 @@ status_flatpak="${RED} ✗${NC}"
 
 echo -e "${BLUE}╭────────────────────────────────────╮${NC}"
 echo -e "${GREEN}│  ${BOLD}AlmaLinux Postinstall ${NC}${GREEN}  │${NC}"
-echo -e "${BLUE}╰────────────────────────────────────╯${NC}\n"
+echo -e "${BLUE}╰────────────────────────────────────╯${NC}
+"
 
 # ============================================================
 # HOMEBREW
@@ -69,96 +70,96 @@ echo -e "${BLUE}╰────────────────────�
 BREW_BIN="/home/linuxbrew/.linuxbrew/bin/brew"
 
 if [[ ! -x "$BREW_BIN" ]]; then
-    info "Instalando Homebrew..."
+    info "Installing Homebrew..."
 
     if NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" \
         && [[ -x "$BREW_BIN" ]]; then
         status_brew="${GREEN} ✓${NC}"
-        success "Homebrew instalado"
+        success "Homebrew installed"
     else
-        warning "Não foi possível instalar o Homebrew em $BREW_BIN"
+        warning "Could not install Homebrew at $BREW_BIN"
     fi
 else
     status_brew="${GREEN} ✓${NC}"
-    success "Homebrew já instalado"
+    success "Homebrew is already installed"
 fi
 
-# Garantir que o ambiente do Brew esteja ativo nesta sessão do script
+# Ensure that the Brew environment is active in this script session
 if [[ -x "$BREW_BIN" ]]; then
     eval "$("$BREW_BIN" shellenv)"
 else
-    warning "Homebrew não está disponível; etapas dependentes do Brew serão ignoradas."
+    warning "Homebrew is not available; Brew-dependent steps will be skipped."
 fi
 
 # ============================================================
 # HOMEBREW AUTO-UPDATE
 # ============================================================
 if [[ -x "$BREW_BIN" ]]; then
-    info "Instalando Homebrew Auto-Update..."
+    info "Installing Homebrew Auto-Update..."
 
     if curl -fsSL https://raw.githubusercontent.com/diogopessoa/brew-update/main/install.sh | bash; then
         status_brew_update="${GREEN} ✓${NC}"
-        success "Homebrew Auto-Update instalado com sucesso"
+        success "Homebrew Auto-Update installed successfully"
     else
-        warning "Falha ao instalar o Homebrew Auto-Update"
+        warning "Failed to install Homebrew Auto-Update"
     fi
 fi
 
 # ============================================================
 # DISTROBOX CONTAINERS AUTO-UPDATE
 # ============================================================
-info "Instalando Distrobox Containers Auto-Update..."
+info "Installing Distrobox Containers Auto-Update..."
 
 if curl -fsSL https://raw.githubusercontent.com/diogopessoa/distrobox-upgrade/main/distrobox-upgrade.sh | bash; then
     status_distrobox_upgrade="${GREEN} ✓${NC}"
-    success "Distrobox Containers Auto-Update instalado com sucesso"
+    success "Distrobox Containers Auto-Update installed successfully"
 else
-    warning "Falha ao instalar o Distrobox Containers Auto-Update"
+    warning "Failed to install Distrobox Containers Auto-Update"
 fi
 
 # ============================================================
-# INSTALAÇÃO ZSH + STARSHIP + PLUGINS (VIA HOMEBREW)
+# ZSH + STARSHIP + PLUGINS INSTALLATION (VIA HOMEBREW)
 # ============================================================
 if [[ -x "$BREW_BIN" ]]; then
-    info "Instalando Zsh, Starship e plugins via Homebrew..."
+    info "Installing Zsh, Starship, and plugins via Homebrew..."
 
     if brew install -y zsh starship zsh-syntax-highlighting zsh-autosuggestions; then
         status_zsh_packages="${GREEN} ✓${NC}"
-        success "Pacotes do Zsh e Starship instalados"
+        success "Zsh and Starship packages installed"
     else
-        warning "Falha ao instalar Zsh, Starship ou plugins"
+        warning "Failed to install Zsh, Starship, or plugins"
     fi
 else
-    warning "Zsh, Starship e plugins não foram instalados porque o Homebrew não está disponível"
+    warning "Zsh, Starship, and plugins were not installed because Homebrew is unavailable"
 fi
 
 # ============================================================
-# CONFIGURAÇÃO DO ~/.zshrc
+# CONFIGURATION OF ~/.zshrc
 # ============================================================
-info "Configurando o arquivo ~/.zshrc..."
+info "Configuring the ~/.zshrc file..."
 
 cat << 'EOF' > "$HOME/.zshrc"
 # ============================================================
-# MENSAGEM DE BOAS-VINDAS DO ZSH
+# ZSH WELCOME MESSAGE
 if [[ -o interactive ]]; then
-    echo "\033[1;32m>_ Zsh\033[0m está pronto!"
+    echo "\u001B[1;32m>_ Zsh\u001B[0m is ready!"
     echo ""
 fi
 
 # ============================================================
-# HOMEBREW ENV
+# HOMEBREW ENVIRONMENT
 # ============================================================
 if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 fi
 
 # ============================================================
-# INTERPRETA # COMO COMENTÁRIO MESMO EM MODO INTERATIVO
+# TREAT # AS A COMMENT EVEN IN INTERACTIVE MODE
 # ============================================================
 setopt INTERACTIVE_COMMENTS
 
 # ============================================================
-# ALIASES (DISTROBOX & SISTEMA)
+# ALIASES (DISTROBOX AND SYSTEM)
 # ============================================================
 alias apt="distrobox enter ubuntu -- sudo apt"
 alias dnf="distrobox enter fedora -- sudo dnf"
@@ -171,7 +172,7 @@ if command -v starship >/dev/null 2>&1; then
 fi
 
 # ============================================================
-# PLUGINS DO ZSH (A ORDEM DE CARREGAMENTO É CRUCIAL!)
+# ZSH PLUGINS (LOADING ORDER IS CRUCIAL!)
 # ============================================================
 BREW_SHARE="/home/linuxbrew/.linuxbrew/share"
 
@@ -180,50 +181,50 @@ if [ -f "$BREW_SHARE/zsh-autosuggestions/zsh-autosuggestions.zsh" ]; then
     source "$BREW_SHARE/zsh-autosuggestions/zsh-autosuggestions.zsh"
 fi
 
-# 2. Syntax Highlighting (DEVE SER O ÚLTIMO!)
+# 2. Syntax Highlighting (MUST BE LOADED LAST!)
 if [ -f "$BREW_SHARE/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]; then
     source "$BREW_SHARE/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 fi
 EOF
 
 status_zshrc="${GREEN} ✓${NC}"
-success "Arquivo ~/.zshrc gerado com sucesso"
+success "~/.zshrc file generated successfully"
 
 # ============================================================
-# DEFINIR ZSH DO BREW COMO SHELL PADRÃO
+# SET BREW'S ZSH AS THE DEFAULT SHELL
 # ============================================================
 BREW_ZSH="/home/linuxbrew/.linuxbrew/bin/zsh"
 
 if [[ -x "$BREW_ZSH" ]]; then
-    info "Definindo Zsh do Homebrew como Shell padrão do usuário..."
+    info "Setting Homebrew's Zsh as the user's default shell..."
 
     if grep -Fxq "$BREW_ZSH" /etc/shells 2>/dev/null; then
-        success "Caminho $BREW_ZSH já está em /etc/shells"
+        success "Path $BREW_ZSH is already in /etc/shells"
     else
         if echo "$BREW_ZSH" | sudo tee -a /etc/shells >/dev/null; then
-            success "Caminho $BREW_ZSH adicionado ao /etc/shells"
+            success "Path $BREW_ZSH added to /etc/shells"
         else
-            warning "Não foi possível adicionar $BREW_ZSH ao /etc/shells"
+            warning "Could not add $BREW_ZSH to /etc/shells"
         fi
     fi
 
     if sudo usermod --shell "$BREW_ZSH" "$USER"; then
-        # Reseta comando customizado do Ptyxis se existir
+        # Reset Ptyxis custom command if it exists
         gsettings reset org.gnome.Ptyxis default-profile-command 2>/dev/null || true
         status_default_shell="${GREEN} ✓${NC}"
-        success "Shell padrão alterado para Zsh"
+        success "Default shell changed to Zsh"
     else
-        warning "Não foi possível alterar o shell padrão para Zsh"
+        warning "Could not change the default shell to Zsh"
     fi
 else
-    warning "Zsh do Homebrew não está disponível; shell padrão não foi alterado"
+    warning "Homebrew's Zsh is unavailable; the default shell was not changed"
 fi
 
 # ============================================================
-# INTEGRAÇÃO HOMEBREW + BASH
+# HOMEBREW + BASH INTEGRATION
 # ============================================================
 if [[ -x "$BREW_BIN" ]]; then
-    info "Configurando Homebrew para Bash..."
+    info "Configuring Homebrew for Bash..."
 
     if sudo tee /etc/profile.d/homebrew.sh >/dev/null << 'EOF'
 # Homebrew (AlmaLinux Atomic)
@@ -233,28 +234,28 @@ fi
 EOF
     then
         status_brew_bash="${GREEN} ✓${NC}"
-        success "Integração Homebrew/Bash criada"
+        success "Homebrew/Bash integration created"
     else
-        warning "Não foi possível criar a integração Homebrew/Bash"
+        warning "Could not create the Homebrew/Bash integration"
     fi
 fi
 
 # ============================================================
 # DISABLE NETWORK WAIT-ONLINE
 # ============================================================
-info "Desativando NetworkManager-wait-online.service..."
+info "Disabling NetworkManager-wait-online.service..."
 
 if sudo systemctl disable NetworkManager-wait-online.service 2>/dev/null; then
     status_network="${GREEN} ✓${NC}"
-    success "NetworkManager-wait-online.service desativado"
+    success "NetworkManager-wait-online.service disabled"
 else
-    warning "Não foi possível desativar NetworkManager-wait-online.service"
+    warning "Could not disable NetworkManager-wait-online.service"
 fi
 
 # ============================================================
 # OFFICE FONTS
 # ============================================================
-info "Instalando Office Fonts..."
+info "Installing Office Fonts..."
 
 FONTS_DIR="$HOME/.local/share/fonts/office_fonts"
 TMP_ZIP="/tmp/office_fonts.zip"
@@ -268,9 +269,9 @@ if curl -fsSL \
     && fc-cache -f "$HOME/.local/share/fonts"; then
 
     status_fonts="${GREEN} ✓${NC}"
-    success "Fontes instaladas"
+    success "Fonts installed"
 else
-    warning "Falha ao instalar as Office Fonts"
+    warning "Failed to install the Office Fonts"
 fi
 
 rm -f "$TMP_ZIP"
@@ -278,7 +279,7 @@ rm -f "$TMP_ZIP"
 # ============================================================
 # HATTER ICONS THEME
 # ============================================================
-info "Instalando Hatter Icons Theme..."
+info "Installing the Hatter Icons Theme..."
 
 ICONS_DIR="$HOME/.local/share/icons"
 HATTER_DIR="/tmp/Hatter_clone"
@@ -292,9 +293,9 @@ if git clone --depth 1 https://github.com/Mibea/Hatter.git "$HATTER_DIR" 2>/dev/
 
     gtk-update-icon-cache -f "$ICONS_DIR/Hatter" 2>/dev/null || true
     status_icons="${GREEN} ✓${NC}"
-    success "Tema de ícones Hatter instalado"
+    success "Hatter icon theme installed"
 else
-    warning "Falha ao instalar o tema de ícones Hatter"
+    warning "Failed to install the Hatter icon theme"
 fi
 
 rm -rf "$HATTER_DIR"
@@ -302,19 +303,19 @@ rm -rf "$HATTER_DIR"
 # ============================================================
 # BOOTC MANAGER
 # ============================================================
-info "Instalando Bootc Manager..."
+info "Installing Bootc Manager..."
 
 if curl -fsSL https://raw.githubusercontent.com/diogopessoa/bootc-manager/main/install.sh | bash; then
     status_bootc_manager="${GREEN} ✓${NC}"
-    success "Bootc Manager instalado com sucesso"
+    success "Bootc Manager installed successfully"
 else
-    warning "Falha ao instalar o Bootc Manager"
+    warning "Failed to install Bootc Manager"
 fi
 
 # ============================================================
-# FLATHUB E PACOTES FLATPAK
+# FLATHUB AND FLATPAK PACKAGES
 # ============================================================
-info "Configurando Flathub..."
+info "Configuring Flathub..."
 
 if sudo flatpak config --system --set languages "pt" \
     && sudo flatpak remote-add \
@@ -323,7 +324,7 @@ if sudo flatpak config --system --set languages "pt" \
         flathub \
         https://dl.flathub.org/repo/flathub.flatpakrepo; then
 
-    lista_apps=(
+    app_list=(
         com.mattjakeman.ExtensionManager
         io.github.kolunmi.Bazaar
         io.github.thetumultuousunicornofdarkness.cpu-x
@@ -333,34 +334,35 @@ if sudo flatpak config --system --set languages "pt" \
         page.tesk.Refine
     )
 
-    if sudo flatpak install --system --assumeyes flathub "${lista_apps[@]}"; then
+    if sudo flatpak install --system --assumeyes flathub "${app_list[@]}"; then
         status_flatpak="${GREEN} ✓${NC}"
-        success "Flatpaks instalados"
+        success "Flatpaks installed"
     else
-        warning "Falha ao instalar um ou mais Flatpaks"
+        warning "Failed to install one or more Flatpaks"
     fi
 else
-    warning "Não foi possível configurar o Flathub"
+    warning "Could not configure Flathub"
 fi
 
 # ============================================================
-# PAINEL RESUMO DE STATUS
+# STATUS SUMMARY PANEL
 # ============================================================
-echo -e "\n"
-echo "▶ Sumário de Modificações:"
+echo -e "
+"
+echo "▶ Modification Summary:"
 echo -e " $status_brew Homebrew"
 echo -e " $status_brew_update Homebrew Auto-Update"
 echo -e " $status_distrobox_upgrade Distrobox Auto-Update"
 echo -e " $status_zsh_packages Zsh + Starship + Plugins (Brew)"
-echo -e " $status_zshrc Configuração ~/.zshrc"
-echo -e " $status_default_shell Zsh definido como Shell Padrão"
-echo -e " $status_brew_bash Integração Homebrew/Bash"
-echo -e " $status_network Network wait-online desativado"
+echo -e " $status_zshrc ~/.zshrc Configuration"
+echo -e " $status_default_shell Zsh Set as Default Shell"
+echo -e " $status_brew_bash Homebrew/Bash Integration"
+echo -e " $status_network Network wait-online Disabled"
 echo -e " $status_fonts Office Fonts"
 echo -e " $status_icons Hatter Icons Theme"
 echo -e " $status_bootc_manager Bootc Manager"
-echo -e " $status_flatpak Apps Flatpak instalados"
+echo -e " $status_flatpak Flatpak Apps Installed"
 echo ""
-echo -e "${BLUE}${BOLD}Tudo pronto! Reinicie o sistema para aplicar as mudanças.${NC}"
-read -rp "Pressione Enter para encerrar..."
+echo -e "${BLUE}${BOLD}Everything is ready! Restart the system to apply the changes.${NC}"
+read -rp "Press Enter to exit..."
 echo ""
