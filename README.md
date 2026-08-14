@@ -70,4 +70,4 @@ The script also installs the configured Flatpak applications system-wide and cre
 
 ## License
 
-This project is licensed under the [MIT License](https://www.google.com/search?q=LICENSE).
+This project is licensed under the [MIT License](https://github.com/diogopessoa/almalinux-postinstall?tab=MIT-1-ov-file).
