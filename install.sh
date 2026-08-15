@@ -325,11 +325,16 @@ if sudo flatpak config --system --set languages "pt" \
         https://dl.flathub.org/repo/flathub.flatpakrepo; then
 
     app_list=(
+        org.gtk.Gtk3theme.adw-gtk3
+        org.gtk.Gtk3theme.adw-gtk3-dark
+        org.gnome.FileRoller
+        org.gnome.SimpleScan
+        org.gnome.Showtime
+        org.localsend.localsend_app
+        com.brave.Browser
         com.mattjakeman.ExtensionManager
         io.github.kolunmi.Bazaar
         io.github.thetumultuousunicornofdarkness.cpu-x
-        org.gnome.SimpleScan
-        org.localsend.localsend_app
         page.codeberg.libre_menu_editor.LibreMenuEditor
         page.tesk.Refine
     )
