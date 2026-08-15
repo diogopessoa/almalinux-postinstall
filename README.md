@@ -4,7 +4,7 @@
   <img src="https://raw.githubusercontent.com/diogopessoa/almalinux-postinstall/main/files/screenshot_almalinux.png" alt="screenshot of AlmaLinux.png" width="100%" style="border-radius: 8px;">
 </p>
 
-A personal post-installation script for **[AlmaLinux 10 Atomic Workstation](https://github.com/AlmaLinux/atomic-workstation)** that automates the setup of a practical desktop environment.
+A personal post-installation script for **[AlmaLinux 10 Atomic Desktop](https://github.com/AlmaLinux/atomic-desktop)** that automates the setup of a practical desktop environment.
 
 ## What the script does
 
